@@ -11,7 +11,7 @@ driver = webdriver.Firefox(executable_path=geck_path)
 # Открываем файлы
 # Чтение списка ссылок из файла
 #Если short_corplinks_list.csv
-csv_list = open("corplinks_list.csv", "r")
+csv_list = open("short_corplinks_list.csv", "r")
 corplinks_list = csv.reader(csv_list, delimiter=",")
 # Запись показателей
 csv_corps = open("corp_parameters.csv", "w")
@@ -38,23 +38,23 @@ for link in corplinks_list:
         pageSource = driver.page_source
 
         soup = BeautifulSoup(pageSource, "html.parser")
-        table = soup.find("div", class_="overviewDataTableWithTooltip")
+        # делаем переменную table, чтобы сократить время и ресурсы на итерацию
+        table = soup.find("div", class_="instrument-page_instrument-page__2xiQP relative")
 
         corp_parameters.append(link[0])
 
-        name_ticker = soup.find("h1", class_="text-2xl font-semibold instrument-header_title__GTWDv mobile:mb-2").get_text()
-        print(name_ticker)
+        name_ticker = table.find("h1", class_="text-2xl font-semibold instrument-header_title__GTWDv mobile:mb-2").get_text()
         corp_parameters.append(name_splt(name_ticker))
         corp_parameters.append(ticker_splt(name_ticker))
 
-        market_cap = table.find("span", text="Market Cap").parent.find("span", class_="float_lang_base_2").get_text()
+        market_cap = table.find("dt", text="Market Cap").parent.find("span", class_="key-info_dd-numeric__2cYjc").get_text()
         try:
             corp_parameters.append(market_cap_int(market_cap))
         except ValueError:
             print("{} MarketCap Value Error".format(corp_parameters[2]))
             corp_parameters.append(market_cap)
 
-        p_e = table.find("span", text="P/E Ratio").parent.find("span", class_="float_lang_base_2").get_text()
+        p_e = table.find("dt", text="P/E Ratio").parent.find("span", class_="key-info_dd-numeric__2cYjc").get_text()
         try:
             p_e = float(p_e) * 100
             p_e = int(p_e)
@@ -63,18 +63,21 @@ for link in corplinks_list:
 
         corp_parameters.append(p_e)
 
-        eps = table.find("span", text="EPS").parent.find("span", class_="float_lang_base_2").get_text()
+        eps = table.find("dt", text="EPS").parent.find("span", class_="key-info_dd-numeric__2cYjc").get_text()
         corp_parameters.append(eps)
 
-        divs = table.find("span", text="Dividend (Yield)").parent.find("span", class_="float_lang_base_2").get_text()
+        try:
+            divs = table.find("dt", text="Dividend (Yield)").parent.find("span", class_="key-info_dd-numeric__2cYjc").get_text()
+        except AttributeError:
+            divs = table.find("dt", text="Dividend (Yield)").parent.find("div",
+                                                                         class_="flex").get_text()
         corp_parameters.append(divs)
 
-        shares = table.find("span", text="Shares Outstanding").parent.find("span",
-                                                                           class_="float_lang_base_2").get_text()
+        shares = table.find("dt", text="Shares Outstanding").parent.find("span",
+                                                                           class_="key-info_dd-numeric__2cYjc").get_text()
         corp_parameters.append(shares)
 
-        next_earnings_date = table.find("span", text="Next Earnings Date").parent.find("span",
-                                                                                       class_="float_lang_base_2").get_text()
+        next_earnings_date = table.find("dt", text="Next Earnings Date").parent.find("a").get_text()
         corp_parameters.append(next_earnings_date)
 
         # Собираем финансовые показатели со страницы фин. отчетности

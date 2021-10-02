@@ -42,7 +42,9 @@ try:
     cursor.execute(create_table_query)
     connection.commit()
 
-    # csv_list = open("corplinks_list.csv", "r")
+    # Запись данных в таблицу из файла csv со ссылками
+
+    # csv_list = open("rus_corplinks_list_part2.csv", "r")
     # corplinks_list = csv.reader(csv_list, delimiter=",")
     #
     # for link in corplinks_list:
@@ -51,21 +53,23 @@ try:
     #         insert_corp_links_table_query = '''
     #                 INSERT INTO corp_links (url, market_country)
     #                 VALUES
-    #                 ("{}", "USA");'''.format(link[0])
+    #                 ("{}", "RUS");'''.format(link[0])
     #         # print(insert_corp_links_table_query)
     #         cursor.execute(insert_corp_links_table_query)
     #         # connection.next_result()
     #         connection.commit()
     # csv_list.close()
 
-    # извлечение данных из бд
-    select_usa_links = '''
-        SELECT url FROM corp_links WHERE market_country = 'USA';
+    # Извлечение данных из бд
+
+    select_links_by_country = '''
+        SELECT url_id, url FROM corp_links WHERE market_country = 'RUS';
         '''
-    cursor.execute(select_usa_links)
+    cursor.execute(select_links_by_country)
     query_result = cursor.fetchall()
     for link in query_result:
-        print(link[0])
+        print(link)
+        # print(link[0])
 
 except Error as error:
     print(error)

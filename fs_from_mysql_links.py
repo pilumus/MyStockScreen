@@ -55,9 +55,6 @@ try:
 
         soup = BeautifulSoup(pageSource, "html.parser")
         table = soup.find("div", id="rsdiv")
-        # print(table)
-        # print(soup.find("th", text="Period Ending:"))
-        # print(soup.find("th", class_="arial_11 noBold title right period"))
 
 
         for th in table.find("th", text="Period Ending:").parent.findAll("th", class_=""):
@@ -87,7 +84,17 @@ try:
         corp_statements = fs_year_prep(corp_parameters)
 
         for statement in corp_statements:
-            print (statement)
+
+            update_fs_reg_with_fs_year ='''
+                INSERT INTO fs_reg 
+                (corp_id, year, revenue, income, assets, equity)
+                VALUES
+                ("{}", "{}", "{}", "{}", "{}", "{}");'''.format(link[0], *statement)
+
+            print(update_fs_reg_with_fs_year)
+
+            # cursor.execute(update_fs_reg_with_fs_year)
+            # connection.commit()
 
 except Error as error:
     print(error)
@@ -95,3 +102,4 @@ except Error as error:
 finally:
     cursor.close()
     connection.close()
+    driver.quit()

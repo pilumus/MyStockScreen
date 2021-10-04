@@ -35,7 +35,6 @@ try:
     cursor = connection.cursor()
     select_links_by_country = '''
         SELECT corp_id, url FROM corp_links
-        LIMIT 5;
         '''
     cursor.execute(select_links_by_country)
     query_result = cursor.fetchall()
@@ -91,10 +90,8 @@ try:
                 VALUES
                 ("{}", "{}", "{}", "{}", "{}", "{}");'''.format(link[0], *statement)
 
-            print(update_fs_reg_with_fs_year)
-
-            # cursor.execute(update_fs_reg_with_fs_year)
-            # connection.commit()
+            cursor.execute(update_fs_reg_with_fs_year)
+            connection.commit()
 
 except Error as error:
     print(error)

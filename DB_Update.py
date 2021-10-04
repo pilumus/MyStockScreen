@@ -20,29 +20,50 @@ connection = create_connection_mysql_db(db_config["mysql"]["host"],
                                         db_config["mysql"]["user"],
                                         db_config["mysql"]["pass"],
                                         "corp_db")
-#Ищет в базе ссылки с номером cid, вытаскивает их и кладет в столбец cid
+
 
 try:
+    #Курсор всегда открыт, ниже писать только тело функции
     cursor = connection.cursor()
-    select_links_by_country = '''
-        SELECT url FROM corp_links WHERE url LIKE '%?cid=%';
-        '''
-    cursor.execute(select_links_by_country)
-    query_result = cursor.fetchall()
-    for link in query_result:
-        link_cid = link[0].split("?cid=")
-        cid_num = (int(link_cid[1]), int(link_cid[1]))
-        update_corp_links_with_cid = '''
-        UPDATE corp_links
-        SET cid = {}
-        WHERE url LIKE '%{}';
-        '''.format(*cid_num)
-        cursor.execute(update_corp_links_with_cid)
-        connection.commit()
+
+    # Ищет в базе ссылки с номером cid, вытаскивает их и кладет в столбец cid
+
+    # select_links_by_country = '''
+    #     SELECT url FROM corp_links WHERE url LIKE '%?cid=%';
+    #     '''
+    # cursor.execute(select_links_by_country)
+    # query_result = cursor.fetchall()
+    # for link in query_result:
+    #     link_cid = link[0].split("?cid=")
+    #     cid_num = (int(link_cid[1]), int(link_cid[1]))
+    #     update_corp_links_with_cid = '''
+    #     UPDATE corp_links
+    #     SET cid = {}
+    #     WHERE url LIKE '%{}';
+    #     '''.format(*cid_num)
+    #     cursor.execute(update_corp_links_with_cid)
+    #     connection.commit()
+
+    attributes = ['-ee', '-co', '-p_', '-adr', '-drc', '-elks']
+
+    query_file = open("query_result.csv", "w")
+    query_writer = csv.writer(query_file, delimiter=",")
+
+    for attribute in attributes:
+        query_writer.writerow(attribute)
+        select_links_by_attribute = '''
+            SELECT corp_id, url FROM corp_links WHERE url LIKE '%{}%';
+            '''.format(attribute)
+        cursor.execute(select_links_by_attribute)
+        query_result = cursor.fetchall()
+        for query in query_result:
+            query_writer.writerow(query)
+
+    query_file.close()
 
 except Error as error:
     print(error)
 finally:
+
     cursor.close()
     connection.close()
-    print("Done")

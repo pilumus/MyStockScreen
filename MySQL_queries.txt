@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS fs_reg (
+    statement_id  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    corp_id INT NOT NULL,
+    year INT NOT NULL,
+    revenue INT,
+    income INT,
+    assets INT,
+    equity INT,
+    CONSTRAINT corp_links_corp_id_fk FOREIGN KEY (corp_id) REFERENCES corp_links (corp_id)
+    );
+
+ALTER TABLE corp_links
+CHANGE COLUMN url_id corp_id INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE fs_reg
+MODIFY COLUMN year VARCHAR (30);
+
+['Sep 26, 2020', 'Sep 28, 2019', 'Sep 29, 2018', 'Sep 30, 2017', 274515, 260174, 265595, 229234, 57411, 55256, 59531, 48351]

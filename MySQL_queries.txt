@@ -15,3 +15,16 @@ CHANGE COLUMN url_id corp_id INT NOT NULL AUTO_INCREMENT;
 ALTER TABLE fs_reg
 MODIFY COLUMN year VARCHAR (30);
 
+SELECT cl.url, fs.year, fs.revenue, fs.income, fs.assets, fs.equity
+FROM corp_links AS cl
+    NATURAL JOIN
+    fs_reg AS fs;
+
+CREATE TABLE IF NOT EXISTS date (
+    date DATE
+    );
+
+INSERT INTO date
+(date)
+VALUES
+("Dec 31, 2020");

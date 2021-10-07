@@ -4,6 +4,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from config import db_config
 from math import floor as f
+from datetime import datetime
 from help_functions import fs_year_prep
 import time, os
 
@@ -58,6 +59,9 @@ try:
 
         for th in table.find("th", text="Period Ending:").parent.findAll("th", class_=""):
             th = th.get_text()
+            th = th.split(',')
+            th = th[0] + th[1]
+            th = datetime.strptime(th, '%b %d %Y')
             corp_parameters.append(th)
 
         for td in table.find("td", text="Total Revenue").parent.findAll("td", class_=""):
@@ -85,7 +89,7 @@ try:
         for statement in corp_statements:
 
             update_fs_reg_with_fs_year ='''
-                INSERT INTO fs_reg 
+                INSERT INTO fs_reg
                 (corp_id, year, revenue, income, assets, equity)
                 VALUES
                 ("{}", "{}", "{}", "{}", "{}", "{}");'''.format(link[0], *statement)

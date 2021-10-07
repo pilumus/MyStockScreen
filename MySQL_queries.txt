@@ -51,3 +51,9 @@ GROUP BY fs_reg.corp_id)
 )
 ORDER BY fs.year;
 
+ALTER TABLE corp_links
+ADD COLUMN 4_yrs_gr CHAR(1);
+
+SELECT * FROM corp_links
+LIMIT 10;
+

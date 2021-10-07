@@ -12,8 +12,9 @@ connection = create_connection_mysql_db(db_config["mysql"]["host"],
 try:
     cursor = connection.cursor()
 
+    #Выбираем id и url компаний, по которым есть финотчетность в таблице fs_reg
     select_corps_without_fs = '''
-    SELECT corp_id, url FROM corp_links
+    SELECT corp_id FROM corp_links
     WHERE EXISTS
     (SELECT corp_id FROM fs_reg
     WHERE corp_links.corp_id = fs_reg.corp_id
@@ -22,6 +23,7 @@ try:
     cursor.execute(select_corps_without_fs)
     corps = cursor.fetchall()
 
+    # Перебираем каждую компанию и запрашиваем по ней все строки из fs_reg
     for corp in corps:
         corp_id = corp[0]
         select_fs_by_corp = '''
@@ -42,13 +44,20 @@ try:
                 params.append(fs[fs_param])
             means.append (asc_growth_finder(params))
 
+        #Если хотя бы одно среднее - отрицательное, то роста нет
         growth = "Y"
         for mean in means:
             if mean < 0:
                 growth = "N"
 
-        print(corp[1], growth)
+        update_corp_links_with_4_yrs_gr = '''
+        UPDATE corp_links
+        SET 4_yrs_gr = '{}'
+        WHERE corp_id = {};
+        '''.format(growth, corp[0])
 
+        cursor.execute(update_corp_links_with_4_yrs_gr)
+        connection.commit()
 
 except Error as error:
     print(error)

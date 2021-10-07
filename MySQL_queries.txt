@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS fs_reg (
     statement_id  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     corp_id INT NOT NULL,
-    year INT NOT NULL,
+    year DATE NOT NULL,
     revenue INT,
     income INT,
     assets INT,
@@ -28,3 +28,26 @@ INSERT INTO date
 (date)
 VALUES
 ("Dec 31, 2020");
+
+SELECT corp_id, url FROM corp_links
+WHERE EXISTS
+(SELECT corp_id FROM fs_reg
+WHERE corp_links.corp_id = fs_reg.corp_id
+GROUP BY fs_reg.corp_id);
+
+SELECT fs.year, fs.revenue, fs.income, fs.assets, fs.equity
+FROM fs_reg AS fs
+WHERE corp_id = 1
+ORDER BY fs.year;
+
+SELECT fs.year, fs.revenue, fs.income, fs.assets, fs.equity
+FROM fs_reg AS fs
+WHERE corp_id IN (
+SELECT corp_id FROM corp_links
+WHERE EXISTS
+(SELECT corp_id FROM fs_reg
+WHERE corp_links.corp_id = fs_reg.corp_id
+GROUP BY fs_reg.corp_id)
+)
+ORDER BY fs.year;
+

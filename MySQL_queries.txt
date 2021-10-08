@@ -57,3 +57,29 @@ ADD COLUMN 4_yrs_gr CHAR(1);
 SELECT * FROM corp_links
 LIMIT 10;
 
+ALTER TABLE corp_links
+ADD COLUMN corp_name VARCHAR(100) AFTER url;
+ADD COLUMN ticker VARCHAR(20) AFTER corp_name;
+
+
+CREATE TABLE IF NOT EXISTS market_info (
+    mi_id  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    corp_id INT NOT NULL,
+    query_date DATETIME NOT NULL,
+    market_cap INT,
+    pe_ratio DEC (20,2),
+    eps DEC (20,2),
+    div_nominal DEC (20,2),
+    div_percent DEC (20,2),
+    shares_outstanding INT,
+    next_earnings_date DATE,
+    FOREIGN KEY (corp_id) REFERENCES corp_links (corp_id)
+    );
+
+CREATE TABLE IF NOT EXISTS datetime_table (
+   datetime_num DATETIME
+   );
+
+INSERT INTO datetime_table
+VALUES
+("2021-10-08 12:56:02");

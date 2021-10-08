@@ -1,3 +1,5 @@
+from datetime import datetime
+
 #Разделяют тикер и название компании из строки с инвестинга
 
 def ticker_splt(n_t):
@@ -47,13 +49,13 @@ def market_cap_int(market_cap_str):
         mc_int = mc_int*1000000
         mc_int = int(mc_int)
 
-    if "B" in market_cap_str:
+    elif "B" in market_cap_str:
         mc_int = del_right_letters(market_cap_str, 1)
         mc_int = float(mc_int)
         mc_int = mc_int*1000
         mc_int = int(mc_int)
 
-    if "M" in market_cap_str:
+    elif "M" in market_cap_str:
         mc_int = del_right_letters(market_cap_str, 3)
         mc_int = int(mc_int)
 
@@ -61,7 +63,6 @@ def market_cap_int(market_cap_str):
         return market_cap_str
         
     return mc_int
-
 
 # Перебираем полученные параметры и готовим список строк для записи в регистр
 # На вход список сырых параметров, на выход список списков
@@ -85,3 +86,34 @@ def fs_year_prep(corp_parameters):
         corp_statements.append(fs_year)
 
     return corp_statements
+
+# Функция проверяет строку на наличие N\A и возвращает NULL в этом случае
+def na_check(string):
+    if "N/A" in string:
+        string = "NULL"
+    return string
+
+#Убирает запятые в количестве акций и преобразует в число
+def shares_convert(string):
+    string = string.split(",")
+    shares_q = ""
+    for part in string:
+        shares_q = shares_q + part
+
+    shares_q = int(shares_q)
+    return shares_q
+
+#преобразует в формат для записи в MySQL тип данных DATE
+def date_convert(date):
+
+    date = date.split(',')
+    date = date[0] + date[1]
+    sql_date = datetime.strptime(date, '%b %d %Y')
+    return sql_date
+
+def div_perc_split(div_percent):
+    n_t_list = div_percent.split("(")
+    tickerlist = n_t_list[1].split("%)")
+    percent = tickerlist[0]
+
+    return percent

@@ -60,6 +60,7 @@ LIMIT 10;
 ALTER TABLE corp_links
 ADD COLUMN corp_name VARCHAR(100) AFTER url;
 ADD COLUMN ticker VARCHAR(20) AFTER corp_name;
+ADD COLUMN cik VARCHAR(10) AFTER cid;
 
 
 CREATE TABLE IF NOT EXISTS market_info (

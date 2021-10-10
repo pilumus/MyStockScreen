@@ -7,7 +7,7 @@ from help_functions import ticker_splt, name_splt, market_cap_int, na_check, sha
 from datetime import datetime
 import time, os
 
-
+#Возвращает id и url компании из таблицы corp_links, с заданным лимитом, по умолчанию лимита нет.
 def corp_links_selection(limit_num=0):
 
     connection = create_connection_mysql_db(db_config["mysql"]["host"],
@@ -36,6 +36,7 @@ def corp_links_selection(limit_num=0):
 
     return query_result
 
+#Принимает список id и url, возвращает список рыночной информации
 def market_info_collecting(query_result):
     try:
         geck_path = os.path.join("C:\\", "Users", "VASidorov", "YandexDisk", "наука", "Коды", "geckodriver.exe")
@@ -88,9 +89,14 @@ def market_info_collecting(query_result):
                                                                                class_="key-info_dd-numeric__2cYjc").get_text()
             market_info.append(shares_convert(shares))
 
-            # Преобразовать в дату
             next_earnings_date = table.find("dt", text="Next Earnings Date").parent.find("a").get_text()
-            market_info.append(date_convert(next_earnings_date))
+            if "N/A" in next_earnings_date:
+                market_info.append(na_check(next_earnings_date))
+            else:
+                next_earnings_date = date_convert(next_earnings_date)
+                next_earnings_date = str(next_earnings_date)
+                next_earnings_date = next_earnings_date.split(' ')
+                market_info.append("'" + next_earnings_date[0] + "'")
 
             market_info_list.append(market_info)
 
@@ -99,8 +105,59 @@ def market_info_collecting(query_result):
 
     return market_info_list
 
+#Принимает список рыночной информации, обновляет таблицу corp_links названием и тикером
+def db_write_nameticker(market_info_collection):
+
+    connection = create_connection_mysql_db(db_config["mysql"]["host"],
+                                            db_config["mysql"]["user"],
+                                            db_config["mysql"]["pass"],
+                                            "corp_db")
+    cursor = connection.cursor()
+    try:
+        for market_info in market_info_collection:
+
+            nameticker_inserter = '''
+            UPDATE corp_links
+            SET
+            corp_name = "{}",
+            ticker = "{}"
+            WHERE corp_id = {};
+            '''.format(market_info[1], market_info[2], market_info[0])
+
+            cursor.execute(nameticker_inserter)
+            connection.commit()
+
+    except Error as error:
+        return error
+
+#Принимает список рыночной информации, добавляет записи регистра market_info
+def db_write_market_info(market_info_collection):
+
+    connection = create_connection_mysql_db(db_config["mysql"]["host"],
+                                            db_config["mysql"]["user"],
+                                            db_config["mysql"]["pass"],
+                                            "corp_db")
+    cursor = connection.cursor()
+    try:
+        for market_info in market_info_collection:
+
+            market_info_inserter = '''
+            INSERT INTO market_info
+            (corp_id, query_date, market_cap, pe_ratio, eps, div_nominal, div_percent, shares_outstanding, next_earnings_date)
+            VALUES
+            ("{}", "{}", {}, {}, {}, {}, {}, {}, {});
+            '''.format(market_info[0], *market_info[3:11])
+
+            cursor.execute(market_info_inserter)
+            connection.commit()
+
+    except Error as error:
+        return error
+
 
 links = corp_links_selection(5)
 
-for market_info in market_info_collecting(links):
-    print (market_info)
+mi_list = market_info_collecting(links)
+
+x = db_write_market_info(mi_list)
+print(x)

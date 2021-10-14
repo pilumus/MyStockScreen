@@ -1,6 +1,6 @@
 from datetime import datetime
 
-#Разделяют тикер и название компании из строки с инвестинга
+# Разделяют тикер и название компании из строки с инвестинга
 
 def ticker_splt(n_t):
     n_t_list = n_t.split("(")
@@ -25,7 +25,7 @@ def name_splt(name_ticker):
 
     return corp_name
 
-#Удаляет number букв с конца строки
+# Удаляет number букв с конца строки
 def del_right_letters(string, number):
     corp_name =""
     corp_name_list = []
@@ -41,7 +41,7 @@ def del_right_letters(string, number):
 
     return corp_name
 
-#Выражает капитализацию в миллионах $
+# Выражает капитализацию в миллионах $
 def market_cap_int(market_cap_str):
     if "T" in market_cap_str:
         mc_int = del_right_letters(market_cap_str, 1)
@@ -93,7 +93,7 @@ def na_check(string):
         string = "NULL"
     return string
 
-#Убирает запятые в количестве акций и преобразует в число
+# Убирает запятые в количестве акций и преобразует в число
 def shares_convert(string):
     string = string.split(",")
     shares_q = ""
@@ -103,14 +103,17 @@ def shares_convert(string):
     shares_q = int(shares_q)
     return shares_q
 
-#преобразует в формат для записи в MySQL тип данных DATE
+# Преобразует в формат для записи в MySQL тип данных DATE
 def date_convert(date):
 
-    date = date.split(',')
-    date = date[0] + date[1]
+    if ',' in date:
+        date = date.split(',')
+        date = date[0] + date[1]
+
     sql_date = datetime.strptime(date, '%b %d %Y')
     return sql_date
 
+# Из "дивиденд(процент%)" выделяет "процент"
 def div_perc_split(div_percent):
     n_t_list = div_percent.split("(")
     tickerlist = n_t_list[1].split("%)")

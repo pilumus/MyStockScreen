@@ -89,10 +89,15 @@ CREATE TABLE IF NOT EXISTS date_table (
 
 INSERT INTO date_table
 VALUES
-('2022-02-01');
+('2009-12-31');
 
 [1, 'Apple Inc', 'AAPL', datetime.datetime(2021, 10, 10, 9, 33, 9), 2360000, '27.99', '5.11', '0.88', '0.61', 16530166000, datetime.datetime(2022, 2, 1, 0, 0)]
 [2, 'Microsoft Corporation', 'MSFT', datetime.datetime(2021, 10, 10, 9, 33, 25), 2220000, '36.60', '8.06', '2.48', '0.84', 7514891248, datetime.datetime(2022, 1, 27, 0, 0)]
 [3, 'Amazon.com Inc', 'AMZN', datetime.datetime(2021, 10, 10, 9, 33, 39), 1670000, '57.31', '57.38', 'NULL', 'NULL', 506440520, datetime.datetime(2022, 2, 3, 0, 0)]
 [4, 'Alphabet Inc Class C', 'GOOG', datetime.datetime(2021, 10, 10, 9, 33, 46), 1870000, '30.31', '92.24', 'NULL', 'NULL', 666754904, datetime.datetime(2022, 2, 2, 0, 0)]
 [5, 'Alphabet Inc Class A', 'GOOGL', datetime.datetime(2021, 10, 10, 9, 33, 59), 1870000, '30.31', '92.24', 'NULL', 'NULL', 666754904, datetime.datetime(2022, 2, 2, 0, 0)]
+
+
+0001018724
+https://data.sec.gov/submissions/CIK0001018724.json
+https://data.sec.gov/api/xbrl/companyfacts/CIK0001018724.json
